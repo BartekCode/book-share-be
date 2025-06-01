@@ -15,6 +15,7 @@
 		<module>app</module>
 		<module>core</module>
 		<module>db</module>
+		<module>book</module>
 	</modules>
 
 	<properties>

@@ -2,7 +2,19 @@ spring:
   application:
     name: app
   datasource:
-    url: jdbc:postgresql://localhost:3306/springjdbc
-    username: guest_user
-    password: guest_password
+    url: jdbc:postgresql://localhost:5433/book-share-db?schema=book_share
+    username: bartek
+    password: bartek
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+
     driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+logging:
+  level:
+    liquibase: DEBUG
+    liquibase.changelog: DEBUG

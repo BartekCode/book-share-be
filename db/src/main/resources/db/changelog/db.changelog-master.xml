@@ -5,6 +5,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-<!--    <include file="db/changelog/db.changelog-v1-create-table-person.xml"/>-->
-<!--    <include file="db/changelog/db.changelog-v2-add-people.xml"/>-->
+    <changeSet id="001-create-schema" author="bartek">
+        <sqlFile
+                path="changesets/init_schema.sql"
+                relativeToChangelogFile="true"
+                stripComments="true"
+                splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>
