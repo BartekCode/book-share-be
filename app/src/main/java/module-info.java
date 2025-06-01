@@ -4,9 +4,8 @@ module app {
     requires spring.beans;
     requires spring.boot;
     requires spring.boot.autoconfigure;
-    requires spring.web;
     requires core;
-    requires db;
+    requires book;
 
     exports com.example.app;
 }
