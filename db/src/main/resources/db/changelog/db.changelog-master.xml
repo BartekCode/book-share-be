@@ -7,7 +7,7 @@
 
     <changeSet id="001-create-schema" author="bartek">
         <sqlFile
-                path="changesets/init_schema.sql"
+                path="changesets/init.sql"
                 relativeToChangelogFile="true"
                 stripComments="true"
                 splitStatements="false"/>

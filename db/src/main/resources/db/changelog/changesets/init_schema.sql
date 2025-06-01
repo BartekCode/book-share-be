@@ -1,1 +1,0 @@
-CREATE SCHEMA book_share;
