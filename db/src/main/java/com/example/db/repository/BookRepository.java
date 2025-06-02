@@ -4,6 +4,7 @@ import com.example.db.model.Book;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class BookRepository {
                                 rs.getString("author"),
                                 rs.getString("imageUrl"),
                                 rs.getString("description"),
-                                rs.getObject("dateAdded", java.time.LocalDate.class),
+                                rs.getObject("dateAdded", LocalDate.class),
                                 rs.getString("genre"),
                                 Arrays.stream((Object[]) rs.getArray("comments").getArray())
                                 .map(String::valueOf)
