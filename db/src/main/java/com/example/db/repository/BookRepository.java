@@ -20,8 +20,8 @@ public class BookRepository {
     public List<Book> getAllBooks() {
       return  jdbcClient.sql("""
                 WITH comments AS (
-                    SELECT book_id, array_agg(comment) AS comments
-                    FROM book_share.comment
+                    SELECT book_id, array_agg(c.content) AS comments
+                    FROM book_share.comment c
                     GROUP BY book_id
                 ),
                 likes AS (
