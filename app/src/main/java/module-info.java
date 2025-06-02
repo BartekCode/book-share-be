@@ -6,6 +6,7 @@ module app {
     requires spring.boot.autoconfigure;
     requires core;
     requires book;
+    requires db;
 
     exports com.example.app;
 }
