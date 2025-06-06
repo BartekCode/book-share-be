@@ -1,9 +1,11 @@
 package com.example.db.configuration;
 
-import org.springframework.context.annotation.ComponentScan;
+import com.example.db.repository.book.BookRepository;
+import com.example.db.repository.user.UserRepository;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
-@ComponentScan(basePackages = "com.example.db")
+@Import({UserRepository.class, BookRepository.class})
 public class DbConfig {
 }

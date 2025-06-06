@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>book</artifactId>
+            <artifactId>web</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

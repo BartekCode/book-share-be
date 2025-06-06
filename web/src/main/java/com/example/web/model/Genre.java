@@ -1,4 +1,4 @@
-package com.example.book.model;
+package com.example.web.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

@@ -1,4 +1,4 @@
-package com.example.book.model;
+package com.example.web.model;
 
 import org.springframework.validation.annotation.Validated;
 

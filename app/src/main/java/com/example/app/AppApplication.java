@@ -1,13 +1,13 @@
 package com.example.app;
 
-import com.example.book.configuration.BookConfig;
+import com.example.web.configuration.WebConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication()
 @Import({
-        BookConfig.class
+        WebConfig.class
 })
 public class AppApplication {
 
