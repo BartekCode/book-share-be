@@ -1,11 +1,9 @@
 package com.example.web.controllers;
 
-import com.example.web.model.BookDTO;
+import com.example.web.model.book.BookDTO;
+import com.example.web.model.book.NewBookDTO;
 import com.example.web.service.BookService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,12 @@ public class BookController {
     @GetMapping("/all")
     public List<BookDTO> getAllBooks() {
         return bookService.getBooks();
+    }
+
+    @PostMapping("/add")
+    public void addBook(
+            @RequestBody() NewBookDTO book
+    ) {
+        bookService.addBook(book);
     }
 }

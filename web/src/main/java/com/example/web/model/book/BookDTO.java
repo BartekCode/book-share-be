@@ -1,5 +1,6 @@
-package com.example.web.model;
+package com.example.web.model.book;
 
+import com.example.web.model.Genre;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
@@ -7,7 +8,7 @@ import java.util.List;
 
 @Validated
 public record BookDTO(
-    String id,
+    Long id,
     String title,
     String author,
     String imageUrl,

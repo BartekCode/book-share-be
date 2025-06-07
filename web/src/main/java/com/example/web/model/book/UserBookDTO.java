@@ -1,17 +1,23 @@
-package com.example.db.model;
+package com.example.web.model.book;
+
+import com.example.web.model.Genre;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public record Book(
+@Validated
+public record UserBookDTO(
     Long id,
+    String userId,
     String title,
     String author,
     String imageUrl,
     String description,
     LocalDate dateAdded,
-    String genre,
+    Genre genre,
     List<String> comments,
     Integer likesNumber,
     boolean isBorrowed
-){}
+) {
+}

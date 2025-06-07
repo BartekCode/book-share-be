@@ -1,7 +1,10 @@
-CREATE SCHEMA book_share;
+CREATE SCHEMA IF NOT EXISTS book_share;
 
 CREATE DOMAIN book_share.genre_value AS VARCHAR(50)
     CHECK (VALUE IN ('Fiction','NonFiction', 'ScienceFiction', 'Science', 'History', 'Biography', 'Fantasy', 'Mystery', 'Romance', 'Undefined', 'Tech', 'Thriller', 'Horror'));
+
+CREATE DOMAIN book_share.status_value AS VARCHAR(20)
+    CHECK (VALUE IN ('Pending', 'Accepted', 'Rejected', 'Done', 'Returned'));
 
 CREATE TABLE IF NOT EXISTS book_share.user (
     id UUID DEFAULT gen_random_uuid(),
@@ -49,7 +52,7 @@ CREATE TABLE IF NOT EXISTS book_share.book_rent_request (
     id BIGINT GENERATED ALWAYS AS IDENTITY,
     book_id BIGINT NOT NULL,
     user_id UUID NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('Pending', 'Accepted', 'Rejected', 'Done')),
+    status book_share.status_value NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (book_id) REFERENCES book_share.book(id),
     FOREIGN KEY (user_id) REFERENCES book_share.user(id),

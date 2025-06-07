@@ -1,5 +1,6 @@
 package com.example.web.controllers;
 
+import com.example.web.model.user.request.UserLoginRequest;
 import com.example.web.model.user.request.UserRegisterRequest;
 import com.example.web.model.user.response.UserDataResponse;
 import com.example.web.model.user.response.UserRegisterResponse;
@@ -25,11 +26,10 @@ public class UserController {
         return userService.registerUser(userRegisterRequest);
     }
 
-    @PostMapping("/data")
+    @PostMapping("/login")
     public UserDataResponse getUserData(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password
+            @RequestBody() @Validated UserLoginRequest userLoginRequest
     ) {
-        return userService.getUserData(username, password);
+        return userService.getUserData(userLoginRequest);
     }
 }

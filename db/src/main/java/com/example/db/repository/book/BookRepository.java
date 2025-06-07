@@ -1,8 +1,7 @@
 package com.example.db.repository.book;
 
 import com.example.db.model.Book;
-import com.example.db.model.UserBookData;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.db.model.NewBook;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +13,9 @@ import java.util.List;
 public class BookRepository {
 
     private final JdbcClient jdbcClient;
-    private final ObjectMapper objectMapper;
 
-    public BookRepository(JdbcClient jdbcClient, ObjectMapper objectMapper) {
+    public BookRepository(JdbcClient jdbcClient) {
         this.jdbcClient = jdbcClient;
-        this.objectMapper = objectMapper;
     }
 
     public List<Book> getAllBooks() {
@@ -51,7 +48,7 @@ public class BookRepository {
                         ORDER BY b.created_at DESC
                         """)
                 .query((rs, rowNum) -> new Book(
-                        rs.getString("id"),
+                        rs.getLong("id"),
                         rs.getString("title"),
                         rs.getString("author"),
                         rs.getString("imageUrl"),
@@ -67,91 +64,106 @@ public class BookRepository {
                 .list();
     }
 
-    //    TODO dodac enkodowanie hasla w core serwis
-    public String saveUser(String username, String email, String password) {
-        return jdbcClient.sql("""
-                        INSERT INTO book_share.user (username, email, password) VALUES (:name, :email, :password)
-                        RETURNING id;
+    public void insertBook(NewBook book) {
+        jdbcClient.sql("""
+                        INSERT INTO book_share.book (user_id, title, author, image_url, description, genre)
+                        VALUES (:userId::uuid, :title, :author, :imageUrl, :description, :genre)
                         """)
-                .param("username", username)
-                .param("email", email)
-                .param("password", password)
-                .query(String.class)
-                .single();
+                .param("title", book.title())
+                .param("author", book.author())
+                .param("imageUrl", book.imageUrl())
+                .param("description", book.description())
+                .param("genre", book.genre())
+                .param("userId", book.userId())
+                .update();
     }
 
-    public UserBookData getUserDataByNameAndPassword(String username, String password) {
+    //TODO    moze getUserData a reszte filtrowac na frontendzie
+    public List<Book> getUserBooks(String userId) {
         return jdbcClient.sql("""
-                        WITH logged_user AS (
-                            SELECT id, username, email
-                            FROM book_share.user
-                            WHERE username = :username AND password = :password
+                        WITH comments AS (
+                            SELECT book_id, array_agg(c.content) AS comments
+                            FROM book_share.comment c
+                            GROUP BY book_id
                         ),
-                        user_books AS (
-                            SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
-                                   b.created_at AS dateAdded, b.genre, b.user_id
-                            FROM book_share.book b
-                            JOIN logged_user u ON b.user_id = u.id
+                        likes AS (
+                            SELECT book_id, COUNT(*) AS likes_number
+                            FROM book_share.book_like
+                            GROUP BY book_id
                         ),
-                        borrowed_books AS (
-                            SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
-                                   b.created_at AS dateAdded, b.genre, br.user_id
-                            FROM book_share.book b
-                            JOIN book_share.book_rent_request br ON br.book_id = b.id
-                            JOIN logged_user u ON br.user_id = u.id
-                            WHERE br.status = 'Accepted' OR br.status = 'Pending'
-                        ),
-                        liked_books AS (
-                            SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
-                                   b.created_at AS dateAdded, b.genre, bl.user_id
-                            FROM book_share.book b
-                            JOIN book_share.book_like bl ON bl.book_id = b.id
-                            JOIN logged_user u ON bl.user_id = u.id
+                        isBorrowed AS (
+                            SELECT br.book_id,
+                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                            FROM book_share.book_rent_request br
+                            GROUP BY book_id
                         )
-                        SELECT 
-                            u.id,
-                            COALESCE(json_agg(DISTINCT ub) FILTER (WHERE ub.id IS NOT NULL), '[]') AS user_books,
-                            COALESCE(json_agg(DISTINCT bb) FILTER (WHERE bb.id IS NOT NULL), '[]') AS borrowed_books,
-                            COALESCE(json_agg(DISTINCT lb) FILTER (WHERE lb.id IS NOT NULL), '[]') AS liked_books
-                        FROM logged_user u
-                        LEFT JOIN user_books ub ON ub.user_id = u.id
-                        LEFT JOIN borrowed_books bb ON bb.user_id = u.id
-                        LEFT JOIN liked_books lb ON lb.user_id = u.id
-                        GROUP BY u.id
+                        SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
+                               b.created_at AS dateAdded, b.genre, 
+                               COALESCE(c.comments, '{}') AS comments, 
+                               COALESCE(l.likes_number, 0) AS likesNumber, 
+                               COALESCE(ib.isBorrowed, false) AS isBorrowed
+                        FROM book_share.book b
+                        LEFT JOIN comments c ON b.id = c.book_id
+                        LEFT JOIN likes l ON b.id = l.book_id
+                        LEFT JOIN isBorrowed ib ON b.id = ib.book_id
+                        WHERE b.user_id = :userId::uuid
+                        ORDER BY b.created_at DESC
                         """)
-                .param("username", username)
-                .param("password", password)
-                .query((rs, rowNum) -> {
-                    try {
-                        String userId = rs.getString("id");
-                        List<Book> userBooks = objectMapper.readValue(
-                                rs.getString("user_books"),
-                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
-                        );
-                        List<Book> borrowedBooks = objectMapper.readValue(
-                                rs.getString("borrowed_books"),
-                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
-                        );
-                        List<Book> likedBooks = objectMapper.readValue(
-                                rs.getString("liked_books"),
-                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
-                        );
-                        userBooks.forEach(c -> System.out.println(c.imageUrl()));
-                        return new UserBookData(userId, userBooks, borrowedBooks, likedBooks);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .single();
+                .param("userId", userId)
+                .query((rs, rowNum) -> new Book(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getString("imageUrl"),
+                        rs.getString("description"),
+                        rs.getObject("dateAdded", LocalDate.class),
+                        rs.getString("genre"),
+                        Arrays.stream((Object[]) rs.getArray("comments").getArray())
+                                .map(String::valueOf)
+                                .toList(),
+                        rs.getInt("likesNumber"),
+                        rs.getBoolean("isBorrowed")
+                ))
+                .list();
     }
 
-    public String getUserId(String userId) {
+//Potrzeba tylko idki polubionych ksiazek, moze ksiazek usera tez
+    public List<Long> getUserLikedBooks(String userId) {
         return jdbcClient.sql("""
-                        SELECT id FROM book_share.user 
-                        WHERE username = :username AND password = :password
-                                      """)
-                .param(userId, userId)
-                .query(String.class)
-                .single();
+                            SELECT bl.book_id
+                            FROM book_share.book_like bl
+                            WHERE bl.user_id = :userId::uuid
+                            ORDER BY bl.book_id
+                        """)
+                .param("userId", userId)
+                .query(Long.class)
+                .list();
+
+    }
+
+    public List<Long> getUserBorrowedBooks(String userId) {
+        return jdbcClient.sql("""
+                            SELECT br.book_id
+                            FROM book_share.book_rent_request br
+                            WHERE br.user_id = :userId::uuid
+                            AND (br.status = 'Accepted' OR br.status = 'Pending')
+                            ORDER BY br.book_id
+                        """)
+                .param("userId", userId)
+                .query(Long.class)
+                .list();
+    }
+
+    public List<Long> getUserReadBooks(String userId) {
+        return jdbcClient.sql("""
+                            SELECT br.book_id
+                            FROM book_share.book_rent_request br
+                            WHERE br.user_id = :userId::uuid
+                            AND (br.status = 'Returned')
+                            ORDER BY br.book_id
+                        """)
+                .param("userId", userId)
+                .query(Long.class)
+                .list();
     }
 }
