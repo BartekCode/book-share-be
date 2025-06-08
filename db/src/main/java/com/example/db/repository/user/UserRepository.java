@@ -73,6 +73,8 @@ public class UserRepository {
                         )
                         SELECT 
                             u.id,
+                            u.email,
+                            u.username, 
                             COALESCE(json_agg(DISTINCT ub) FILTER (WHERE ub.id IS NOT NULL), '[]') AS user_books,
                             COALESCE(json_agg(DISTINCT bb) FILTER (WHERE bb.id IS NOT NULL), '[]') AS borrowed_books,
                             COALESCE(json_agg(DISTINCT lb) FILTER (WHERE lb.id IS NOT NULL), '[]') AS liked_books
@@ -80,12 +82,13 @@ public class UserRepository {
                         LEFT JOIN user_books ub ON ub.user_id = u.id
                         LEFT JOIN borrowed_books bb ON bb.user_id = u.id
                         LEFT JOIN liked_books lb ON lb.user_id = u.id
-                        GROUP BY u.id
+                        GROUP BY u.id, u.email, u.username
                         """)
                 .param("username", username)
                 .query((rs, rowNum) -> {
                     try {
                         String userId = rs.getString("id");
+                        String email = rs.getString("email");
                         List<Book> userBooks = objectMapper.readValue(
                                 rs.getString("user_books"),
                                 objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
@@ -98,7 +101,7 @@ public class UserRepository {
                                 rs.getString("liked_books"),
                                 objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
                         );
-                        return new UserBookData(userId, userBooks, borrowedBooks, likedBooks);
+                        return new UserBookData(userId, username, email, userBooks, borrowedBooks, likedBooks);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

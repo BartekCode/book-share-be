@@ -54,6 +54,8 @@ public class UserService {
             UserBookData userBookData = userRepository.getUserDataByName(userLoginRequest.username());
             return new UserDataResponse(
                     userBookData.id(),
+                    userBookData.username(),
+                    userBookData.email(),
                     bookRepository.getUserBooks(userBookData.id()).stream().map(Book::id).toList(),
                     bookRepository.getUserBorrowedBooks(userBookData.id()),
                     bookRepository.getUserReadBooks(userBookData.id()),
