@@ -8,11 +8,13 @@ spring:
     hikari:
       minimum-idle: 5
       maximum-pool-size: 10
-
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
+  threads:
+    virtual:
+      enabled: true
 
 logging:
   level:
