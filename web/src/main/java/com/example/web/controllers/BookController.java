@@ -3,6 +3,7 @@ package com.example.web.controllers;
 import com.example.web.model.book.BookDTO;
 import com.example.web.model.book.NewBookDTO;
 import com.example.web.service.BookService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +20,11 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public List<BookDTO> getAllBooks() {
-        return bookService.getBooks();
+    public List<BookDTO> getAllBooks(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "50") int size
+    ) {
+        return bookService.getBooks(page, size);
     }
 
     @PostMapping("/add")
@@ -28,5 +32,39 @@ public class BookController {
             @RequestBody() NewBookDTO book
     ) {
         bookService.addBook(book);
+    }
+
+    @DeleteMapping("/remove/{bookId}")
+    public ResponseEntity<Void> removeBook(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("userId") String userId
+    ) {
+        bookService.removeBook(userId, bookId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/borrow/{bookId}")
+    public Long borrowBook(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("userId") String userId
+    ) {
+        return bookService.borrowBook(userId, bookId);
+    }
+
+    @PutMapping("/retrun/{bookId}")
+    public Long returnBook(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("userId") String userId
+    ) {
+        return bookService.returnBook(userId, bookId);
+    }
+
+    @PutMapping("/accept/{bookId}")
+    public Long acceptBookRequest(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam("userId") String userId,
+            @RequestParam("isAccepted") Boolean isAccepted
+    ) {
+        return bookService.updateBookRequest(userId, bookId, isAccepted);
     }
 }

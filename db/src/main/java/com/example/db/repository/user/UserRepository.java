@@ -56,28 +56,11 @@ public class UserRepository {
                             FROM book_share.book b
                             JOIN logged_user u ON b.user_id = u.id
                         ),
-                        borrowed_books AS (
-                            SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
-                                   b.created_at AS dateAdded, b.genre, br.user_id
-                            FROM book_share.book b
-                            JOIN book_share.book_rent_request br ON br.book_id = b.id
-                            JOIN logged_user u ON br.user_id = u.id
-                            WHERE br.status = 'Accepted' OR br.status = 'Pending'
-                        ),
-                        liked_books AS (
-                            SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
-                                   b.created_at AS dateAdded, b.genre, bl.user_id
-                            FROM book_share.book b
-                            JOIN book_share.book_like bl ON bl.book_id = b.id
-                            JOIN logged_user u ON bl.user_id = u.id
-                        )
                         SELECT 
                             u.id,
                             u.email,
                             u.username, 
-                            COALESCE(json_agg(DISTINCT ub) FILTER (WHERE ub.id IS NOT NULL), '[]') AS user_books,
-                            COALESCE(json_agg(DISTINCT bb) FILTER (WHERE bb.id IS NOT NULL), '[]') AS borrowed_books,
-                            COALESCE(json_agg(DISTINCT lb) FILTER (WHERE lb.id IS NOT NULL), '[]') AS liked_books
+                            COALESCE(json_agg(DISTINCT ub) FILTER (WHERE ub.id IS NOT NULL), '[]') AS user_books
                         FROM logged_user u
                         LEFT JOIN user_books ub ON ub.user_id = u.id
                         LEFT JOIN borrowed_books bb ON bb.user_id = u.id
@@ -101,7 +84,7 @@ public class UserRepository {
                                 rs.getString("liked_books"),
                                 objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
                         );
-                        return new UserBookData(userId, username, email, userBooks, borrowedBooks, likedBooks);
+                        return new UserBookData(userId, username, email, userBooks);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

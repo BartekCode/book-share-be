@@ -1,0 +1,3 @@
+ALTER TABLE book_share.book
+    ADD COLUMN IF NOT EXISTS deleted boolean DEFAULT false,
+    ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP DEFAULT NULL;

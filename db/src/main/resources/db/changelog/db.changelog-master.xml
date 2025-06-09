@@ -12,4 +12,11 @@
                 stripComments="true"
                 splitStatements="false"/>
     </changeSet>
+    <changeSet id="002-update-book" author="bartek">
+        <sqlFile
+                path="changesets/updateBook.sql"
+                relativeToChangelogFile="true"
+                stripComments="true"
+                splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>

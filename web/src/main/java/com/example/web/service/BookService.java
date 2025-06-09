@@ -5,6 +5,7 @@ import com.example.db.model.Book;
 import com.example.db.model.NewBook;
 import com.example.db.repository.book.BookRepository;
 import com.example.web.model.book.BookDTO;
+import com.example.web.model.book.BookRequestStatus;
 import com.example.web.model.book.NewBookDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,8 @@ public class BookService {
     }
 
     @LogExecutionTime
-    public List<BookDTO> getBooks() {
-        List<Book> allBooks = bookRepository.getAllBooks();
+    public List<BookDTO> getBooks(int page, int size) {
+        List<Book> allBooks = bookRepository.getAllBooks(page,size);
         return getBookDTOS(allBooks);
     }
 
@@ -42,6 +43,27 @@ public class BookService {
                 book.description(),
                 book.genre().getCode()
         ));
+    }
+
+    @LogExecutionTime
+    public void removeBook(String userId, Long bookId) {
+        bookRepository.removeBook(userId, bookId);
+    }
+
+    @LogExecutionTime
+    public Long borrowBook(String userId, Long bookId) {
+      return bookRepository.borrowBook(userId, bookId);
+    }
+
+    @LogExecutionTime
+    public Long returnBook(String userId, Long bookId) {
+       return bookRepository.returnBook(userId, bookId);
+    }
+
+    @LogExecutionTime
+    public Long updateBookRequest(String userId, Long bookId, Boolean isAccepted) {
+        BookRequestStatus status = isAccepted ? BookRequestStatus.ACCEPTED : BookRequestStatus.REJECTED;
+       return bookRepository.updateBookRequest(userId, bookId, status.getStatus());
     }
 
 }
