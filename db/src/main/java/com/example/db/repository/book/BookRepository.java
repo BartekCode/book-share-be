@@ -147,6 +147,7 @@ public class BookRepository {
 
     }
 
+//    TODO usunac Pending jak bedzie mechanizm Accepted/Rejected przez wlasciciela
     public List<Long> getUserBorrowedBooks(String userId) {
         return jdbcClient.sql("""
                             SELECT br.book_id
@@ -194,7 +195,7 @@ public class BookRepository {
     public Long borrowBook(String userId, Long bookId) {
         return jdbcClient.sql("""
                         INSERT INTO book_share.book_rent_request (user_id, book_id, status)
-                        VALUES (:userId::uuid, :bookId, 'Pending')
+                        SELECT :userId::uuid, :bookId, 'Pending'
                         WHERE NOT EXISTS (
                             SELECT 1
                             FROM book_share.book_rent_request br

@@ -55,7 +55,7 @@ public class UserRepository {
                                    b.created_at AS dateAdded, b.genre, b.user_id
                             FROM book_share.book b
                             JOIN logged_user u ON b.user_id = u.id
-                        ),
+                        )
                         SELECT 
                             u.id,
                             u.email,
@@ -63,8 +63,6 @@ public class UserRepository {
                             COALESCE(json_agg(DISTINCT ub) FILTER (WHERE ub.id IS NOT NULL), '[]') AS user_books
                         FROM logged_user u
                         LEFT JOIN user_books ub ON ub.user_id = u.id
-                        LEFT JOIN borrowed_books bb ON bb.user_id = u.id
-                        LEFT JOIN liked_books lb ON lb.user_id = u.id
                         GROUP BY u.id, u.email, u.username
                         """)
                 .param("username", username)
@@ -76,14 +74,14 @@ public class UserRepository {
                                 rs.getString("user_books"),
                                 objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
                         );
-                        List<Book> borrowedBooks = objectMapper.readValue(
-                                rs.getString("borrowed_books"),
-                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
-                        );
-                        List<Book> likedBooks = objectMapper.readValue(
-                                rs.getString("liked_books"),
-                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
-                        );
+//                        List<Book> borrowedBooks = objectMapper.readValue(
+//                                rs.getString("borrowed_books"),
+//                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
+//                        );
+//                        List<Book> likedBooks = objectMapper.readValue(
+//                                rs.getString("liked_books"),
+//                                objectMapper.getTypeFactory().constructCollectionType(List.class, Book.class)
+//                        );
                         return new UserBookData(userId, username, email, userBooks);
                     } catch (Exception e) {
                         throw new RuntimeException(e);

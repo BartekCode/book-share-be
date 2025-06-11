@@ -51,7 +51,7 @@ public class BookController {
         return bookService.borrowBook(userId, bookId);
     }
 
-    @PutMapping("/retrun/{bookId}")
+    @PutMapping("/return/{bookId}")
     public Long returnBook(
             @PathVariable("bookId") Long bookId,
             @RequestParam("userId") String userId
