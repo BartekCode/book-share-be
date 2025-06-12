@@ -19,4 +19,11 @@
                 stripComments="true"
                 splitStatements="false"/>
     </changeSet>
+    <changeSet id="003-add-msg_column" author="bartek">
+        <sqlFile
+                path="changesets/bookRequestMsgColumn.sql"
+                relativeToChangelogFile="true"
+                stripComments="true"
+                splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>

@@ -133,44 +133,169 @@ public class BookRepository {
                 .list();
     }
 
-    //Potrzeba tylko idki polubionych ksiazek, moze ksiazek usera tez
-    public List<Long> getUserLikedBooks(String userId) {
+    public List<Book> getUserLikedBooks(String userId) {
         return jdbcClient.sql("""
-                            SELECT bl.book_id
-                            FROM book_share.book_like bl
-                            WHERE bl.user_id = :userId::uuid
-                            ORDER BY bl.book_id
+                        WITH liked_books AS (
+                            SELECT book_id
+                            FROM book_share.book_like
+                            WHERE user_id = :userId::uuid
+                            ),
+                        comments AS (
+                            SELECT book_id, array_agg(c.content) AS comments
+                            FROM book_share.comment c
+                            GROUP BY book_id
+                        ),
+                        likes AS (
+                            SELECT book_id, COUNT(*) AS likes_number
+                            FROM book_share.book_like
+                            GROUP BY book_id
+                        ),
+                        isBorrowed AS (
+                            SELECT br.book_id,
+                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                            FROM book_share.book_rent_request br
+                            GROUP BY book_id
+                        )
+                        SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
+                               b.created_at AS dateAdded, b.genre, 
+                               COALESCE(c.comments, '{}') AS comments, 
+                               COALESCE(l.likes_number, 0) AS likesNumber, 
+                               COALESCE(ib.isBorrowed, false) AS isBorrowed
+                        FROM liked_books lb
+                        JOIN book_share.book b ON lb.book_id = b.id
+                        LEFT JOIN comments c ON lb.book_id = c.book_id
+                        LEFT JOIN likes l ON lb.book_id = l.book_id
+                        LEFT JOIN isBorrowed ib ON lb.book_id = ib.book_id
+                        WHERE b.deleted = false    
+                        ORDER BY b.created_at DESC
                         """)
                 .param("userId", userId)
-                .query(Long.class)
+                .query((rs, rowNum) -> new Book(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getString("imageUrl"),
+                        rs.getString("description"),
+                        rs.getObject("dateAdded", LocalDate.class),
+                        rs.getString("genre"),
+                        Arrays.stream((Object[]) rs.getArray("comments").getArray())
+                                .map(String::valueOf)
+                                .toList(),
+                        rs.getInt("likesNumber"),
+                        rs.getBoolean("isBorrowed")
+                ))
                 .list();
 
     }
 
 //    TODO usunac Pending jak bedzie mechanizm Accepted/Rejected przez wlasciciela
-    public List<Long> getUserBorrowedBooks(String userId) {
+    public List<Book> getUserBorrowedBooks(String userId) {
         return jdbcClient.sql("""
+                        WITH borrowed_books AS (
                             SELECT br.book_id
                             FROM book_share.book_rent_request br
                             WHERE br.user_id = :userId::uuid
-                            AND (br.status = 'Accepted' OR br.status = 'Pending')
-                            ORDER BY br.book_id
+                            AND (status = 'Accepted' OR status = 'Pending')
+                            ),
+                        comments AS (
+                            SELECT book_id, array_agg(c.content) AS comments
+                            FROM book_share.comment c
+                            GROUP BY book_id
+                        ),
+                        likes AS (
+                            SELECT book_id, COUNT(*) AS likes_number
+                            FROM book_share.book_like
+                            GROUP BY book_id
+                        ),
+                        isBorrowed AS (
+                            SELECT br.book_id,
+                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                            FROM book_share.book_rent_request br
+                            GROUP BY book_id
+                        )
+                        SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
+                               b.created_at AS dateAdded, b.genre, 
+                               COALESCE(c.comments, '{}') AS comments, 
+                               COALESCE(l.likes_number, 0) AS likesNumber, 
+                               COALESCE(ib.isBorrowed, false) AS isBorrowed
+                        FROM borrowed_books bb
+                        JOIN book_share.book b ON bb.book_id = b.id
+                        LEFT JOIN comments c ON bb.book_id = c.book_id
+                        LEFT JOIN likes l ON bb.book_id = l.book_id
+                        LEFT JOIN isBorrowed ib ON bb.book_id = ib.book_id
+                        WHERE b.deleted = false    
+                        ORDER BY b.created_at DESC
                         """)
                 .param("userId", userId)
-                .query(Long.class)
+                .query((rs, rowNum) -> new Book(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getString("imageUrl"),
+                        rs.getString("description"),
+                        rs.getObject("dateAdded", LocalDate.class),
+                        rs.getString("genre"),
+                        Arrays.stream((Object[]) rs.getArray("comments").getArray())
+                                .map(String::valueOf)
+                                .toList(),
+                        rs.getInt("likesNumber"),
+                        rs.getBoolean("isBorrowed")
+                ))
                 .list();
     }
 
-    public List<Long> getUserReadBooks(String userId) {
+    public List<Book> getUserReadBooks(String userId) {
         return jdbcClient.sql("""
-                            SELECT br.book_id
+                        WITH read_books AS (
+                            SELECT DISTINCT (br.book_id)
                             FROM book_share.book_rent_request br
                             WHERE br.user_id = :userId::uuid
-                            AND (br.status = 'Returned')
-                            ORDER BY br.book_id
+                            AND status = 'Returned'
+                            ),
+                        comments AS (
+                            SELECT book_id, array_agg(c.content) AS comments
+                            FROM book_share.comment c
+                            GROUP BY book_id
+                        ),
+                        likes AS (
+                            SELECT book_id, COUNT(*) AS likes_number
+                            FROM book_share.book_like
+                            GROUP BY book_id
+                        ),
+                        isBorrowed AS (
+                            SELECT br.book_id,
+                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                            FROM book_share.book_rent_request br
+                            GROUP BY book_id
+                        )
+                        SELECT b.id, b.title, b.author, b.image_url AS imageUrl, b.description, 
+                               b.created_at AS dateAdded, b.genre, 
+                               COALESCE(c.comments, '{}') AS comments, 
+                               COALESCE(l.likes_number, 0) AS likesNumber, 
+                               COALESCE(ib.isBorrowed, false) AS isBorrowed
+                        FROM read_books rb
+                        JOIN book_share.book b ON rb.book_id = b.id
+                        LEFT JOIN comments c ON rb.book_id = c.book_id
+                        LEFT JOIN likes l ON rb.book_id = l.book_id
+                        LEFT JOIN isBorrowed ib ON rb.book_id = ib.book_id
+                        WHERE b.deleted = false    
+                        ORDER BY b.created_at DESC
                         """)
                 .param("userId", userId)
-                .query(Long.class)
+                .query((rs, rowNum) -> new Book(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getString("imageUrl"),
+                        rs.getString("description"),
+                        rs.getObject("dateAdded", LocalDate.class),
+                        rs.getString("genre"),
+                        Arrays.stream((Object[]) rs.getArray("comments").getArray())
+                                .map(String::valueOf)
+                                .toList(),
+                        rs.getInt("likesNumber"),
+                        rs.getBoolean("isBorrowed")
+                ))
                 .list();
     }
 
@@ -217,7 +342,7 @@ public class BookRepository {
                         SET status = 'Returned'
                         WHERE br.user_id = :userId::uuid
                         AND br.book_id = :bookId
-                        AND br.status = 'Accepted'
+                        AND br.status IN ('Pending', 'Accepted')
                         RETURNING id;
                         """)
                 .param("userId", userId)
@@ -226,14 +351,19 @@ public class BookRepository {
                 .single();
     }
 
-    public Long updateBookRequest(String userId, Long bookId, String status) {
+    public Long updateBookRequest(
+            String userId,
+            Long bookId,
+            String expectedStatus,
+            String status
+    ) {
         return jdbcClient.sql("""
                         UPDATE book_share.book_rent_request br
                         SET status = :status
                         JOIN book_share.book b ON br.book_id = b.id
                         WHERE b.user_id = :userId::uuid
+                        AND br.status = :expectedStatus
                         AND br.book_id = :bookId
-                        AND br.status = 'Accepted'
                         RETURNING id;
                         """)
                 .param("userId", userId)
@@ -241,5 +371,19 @@ public class BookRepository {
                 .param("status", status)
                 .query(Long.class)
                 .single();
+    }
+
+
+    public List<BookRequestData> checkPendingRequests(String userId) {
+        return jdbcClient.sql("""
+                        SELECT br.id, br.book_id AS bookId, br.user_id AS userId, br.status, br.message
+                        FROM book_share.book_rent_request br
+                        JOIN book_share.book b ON br.book_id = b.id
+                        WHERE b.user_id = :userId::uuid
+                        AND br.status = 'Pending'
+                        """)
+                .param("userId", userId)
+                .query(BookRequestData.class)
+                .list();
     }
 }

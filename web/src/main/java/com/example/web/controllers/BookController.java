@@ -1,6 +1,7 @@
 package com.example.web.controllers;
 
 import com.example.web.model.book.BookDTO;
+import com.example.web.model.book.BookRequestDTO;
 import com.example.web.model.book.NewBookDTO;
 import com.example.web.service.BookService;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,13 @@ public class BookController {
             @RequestParam("userId") String userId,
             @RequestParam("isAccepted") Boolean isAccepted
     ) {
-        return bookService.updateBookRequest(userId, bookId, isAccepted);
+        return bookService.acceptBookRequest(userId, bookId, isAccepted);
+    }
+
+    @GetMapping("/request/{userId}")
+    public List<BookRequestDTO> getPendingRequests(
+            @PathVariable("userId") String userId
+    ) {
+        return bookService.checkRequests(userId);
     }
 }

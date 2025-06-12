@@ -2,9 +2,11 @@ package com.example.web.service;
 
 import com.example.core.services.log.LogExecutionTime;
 import com.example.db.model.Book;
-import com.example.db.model.UserBookData;
+import com.example.db.model.UserData;
 import com.example.db.repository.book.BookRepository;
 import com.example.db.repository.user.UserRepository;
+import com.example.web.model.Genre;
+import com.example.web.model.book.BookDTO;
 import com.example.web.model.user.request.UserLoginRequest;
 import com.example.web.model.user.request.UserRegisterRequest;
 import com.example.web.model.user.response.UserDataResponse;
@@ -12,22 +14,28 @@ import com.example.web.model.user.response.UserRegisterResponse;
 import com.example.web.utils.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.reactive.TransactionContextManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import static com.example.web.utils.BookUtils.getBookDTOS;
-import static com.example.web.utils.BookUtils.getUserBooksDTO;
+import java.util.List;
 
 @Service
 public class UserService {
 
     private final PasswordEncoder passwordEncoder = new PasswordEncoder();
-    private  UserRepository userRepository;
+    private UserRepository userRepository;
     private BookRepository bookRepository;
+    private TransactionTemplate tx;
 
     @Autowired
-    public UserService(UserRepository userRepository, BookRepository bookRepository
+    public UserService(
+            UserRepository userRepository,
+            BookRepository bookRepository,
+            TransactionTemplate tx
     ) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
+        this.tx = tx;
     }
 
     public UserService() {
@@ -43,27 +51,43 @@ public class UserService {
         ));
     }
 
-//TODO   Przerobic by byly juz zwrcone ksiazki usera jako obiekty json a nie id
+    //TODO   Przerobic by byly juz zwrcone ksiazki usera jako obiekty json a nie id
     @LogExecutionTime
     public UserDataResponse getUserData(UserLoginRequest userLoginRequest) {
-        String password = userRepository.getUserPasswordByUsername(userLoginRequest.username());
+        return tx.execute(status -> {
+            UserData userData = userRepository.getUserDataByName(userLoginRequest.username());
+            if (passwordEncoder.matches(
+                    userLoginRequest.password(),
+                    userData.password()
+            )) {
+                return new UserDataResponse(
+                        userData.id(),
+                        userData.username(),
+                        userData.email(),
+                        mapBooks(bookRepository.getUserBooks(userData.id())),
+                        mapBooks(bookRepository.getUserBorrowedBooks(userData.id())),
+                        mapBooks(bookRepository.getUserReadBooks(userData.id())),
+                        mapBooks(bookRepository.getUserLikedBooks(userData.id())));
+            } else {
+                throw new IllegalArgumentException("Invalid username or password");
+            }
+        });
+    }
 
-        if (passwordEncoder.matches(
-                userLoginRequest.password(),
-                password
-        )) {
-            UserBookData userBookData = userRepository.getUserDataByName(userLoginRequest.username());
-            return new UserDataResponse(
-                    userBookData.id(),
-                    userBookData.username(),
-                    userBookData.email(),
-                    bookRepository.getUserBooks(userBookData.id()).stream().map(Book::id).toList(),
-                    bookRepository.getUserBorrowedBooks(userBookData.id()),
-                    bookRepository.getUserReadBooks(userBookData.id()),
-                    bookRepository.getUserLikedBooks(userBookData.id())
-                    );
-        } else {
-            throw new IllegalArgumentException("Invalid username or password");
-        }
+    private List<BookDTO> mapBooks(List<Book> books) {
+        return books.stream()
+                .map(book -> new BookDTO(
+                        book.id(),
+                        book.title(),
+                        book.author(),
+                        book.imageUrl(),
+                        book.description(),
+                        book.dateAdded(),
+                        Genre.fromCode(book.genre()),
+                        book.comments(),
+                        book.likesNumber(),
+                        book.isBorrowed()
+                ))
+                .toList();
     }
 }

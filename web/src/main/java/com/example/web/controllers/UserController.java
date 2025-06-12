@@ -26,7 +26,7 @@ public class UserController {
         return userService.registerUser(userRegisterRequest);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/data")
     public UserDataResponse getUserData(
             @RequestBody() @Validated UserLoginRequest userLoginRequest
     ) {

@@ -1,10 +1,8 @@
 package com.example.db.model;
 
-import java.util.List;
-
-public record UserBookData(
+public record UserData(
         String id,
         String username,
         String email,
-        List<Book> userBooks
+        String password
 ) { }

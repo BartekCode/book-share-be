@@ -6,6 +6,7 @@ module web {
     requires spring.security.crypto;
     requires jakarta.annotation;
     requires spring.beans;
+    requires spring.tx;
 
     exports com.example.web.controllers;
     exports com.example.web.model;
