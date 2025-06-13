@@ -63,10 +63,11 @@ public class BookController {
     @PutMapping("/accept/{bookId}")
     public Long acceptBookRequest(
             @PathVariable("bookId") Long bookId,
-            @RequestParam("userId") String userId,
+            @RequestParam("requestUserId") String requestUserId,
+            @RequestParam("ownerUserId") String ownerUserId,
             @RequestParam("isAccepted") Boolean isAccepted
     ) {
-        return bookService.acceptBookRequest(userId, bookId, isAccepted);
+        return bookService.acceptBookRequest(requestUserId, ownerUserId, bookId, isAccepted);
     }
 
     @GetMapping("/request/{userId}")

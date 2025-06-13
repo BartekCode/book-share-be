@@ -32,7 +32,7 @@ public class BookRepository {
                         ),
                         isBorrowed AS (
                             SELECT book_id,
-                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                                bool_or(status = 'Accepted') AS isBorrowed
                             FROM book_share.book_rent_request
                             GROUP BY book_id
                         )
@@ -98,7 +98,7 @@ public class BookRepository {
                         ),
                         isBorrowed AS (
                             SELECT br.book_id,
-                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                                bool_or(status = 'Accepted') AS isBorrowed
                             FROM book_share.book_rent_request br
                             GROUP BY book_id
                         )
@@ -152,7 +152,7 @@ public class BookRepository {
                         ),
                         isBorrowed AS (
                             SELECT br.book_id,
-                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                                bool_or(status = 'Accepted') AS isBorrowed
                             FROM book_share.book_rent_request br
                             GROUP BY book_id
                         )
@@ -188,14 +188,13 @@ public class BookRepository {
 
     }
 
-//    TODO usunac Pending jak bedzie mechanizm Accepted/Rejected przez wlasciciela
     public List<Book> getUserBorrowedBooks(String userId) {
         return jdbcClient.sql("""
                         WITH borrowed_books AS (
                             SELECT br.book_id
                             FROM book_share.book_rent_request br
                             WHERE br.user_id = :userId::uuid
-                            AND (status = 'Accepted' OR status = 'Pending')
+                            AND (status = 'Accepted')
                             ),
                         comments AS (
                             SELECT book_id, array_agg(c.content) AS comments
@@ -209,7 +208,7 @@ public class BookRepository {
                         ),
                         isBorrowed AS (
                             SELECT br.book_id,
-                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                                bool_or(status = 'Accepted') AS isBorrowed
                             FROM book_share.book_rent_request br
                             GROUP BY book_id
                         )
@@ -264,7 +263,7 @@ public class BookRepository {
                         ),
                         isBorrowed AS (
                             SELECT br.book_id,
-                                bool_or(status = 'Accepted' OR status = 'Pending') AS isBorrowed
+                                bool_or(status = 'Accepted') AS isBorrowed
                             FROM book_share.book_rent_request br
                             GROUP BY book_id
                         )
@@ -342,7 +341,7 @@ public class BookRepository {
                         SET status = 'Returned'
                         WHERE br.user_id = :userId::uuid
                         AND br.book_id = :bookId
-                        AND br.status IN ('Pending', 'Accepted')
+                        AND br.status IN ('Accepted')
                         RETURNING id;
                         """)
                 .param("userId", userId)
@@ -352,7 +351,8 @@ public class BookRepository {
     }
 
     public Long updateBookRequest(
-            String userId,
+            String requestUserId,
+            String ownerUserId,
             Long bookId,
             String expectedStatus,
             String status
@@ -360,15 +360,19 @@ public class BookRepository {
         return jdbcClient.sql("""
                         UPDATE book_share.book_rent_request br
                         SET status = :status
-                        JOIN book_share.book b ON br.book_id = b.id
-                        WHERE b.user_id = :userId::uuid
-                        AND br.status = :expectedStatus
-                        AND br.book_id = :bookId
-                        RETURNING id;
-                        """)
-                .param("userId", userId)
+                        FROM book_share.book b
+                        WHERE br.book_id = b.id
+                          AND b.user_id = :ownerUserId::uuid
+                          AND br.status = :expectedStatus
+                          AND br.book_id = :bookId
+                          AND br.user_id = :requestUserId::uuid
+                        RETURNING br.id;
+                            """)
+                .param("requestUserId", requestUserId)
+                .param("ownerUserId",ownerUserId)
                 .param("bookId", bookId)
                 .param("status", status)
+                .param("expectedStatus",expectedStatus)
                 .query(Long.class)
                 .single();
     }
@@ -376,9 +380,10 @@ public class BookRepository {
 
     public List<BookRequestData> checkPendingRequests(String userId) {
         return jdbcClient.sql("""
-                        SELECT br.id, br.book_id AS bookId, br.user_id AS userId, br.status, br.message
+                        SELECT br.id, br.book_id AS bookId, br.user_id AS userId, br.status, br.message, b.image_url, u.username
                         FROM book_share.book_rent_request br
                         JOIN book_share.book b ON br.book_id = b.id
+                        JOIN book_share.user u ON br.user_id = u.id
                         WHERE b.user_id = :userId::uuid
                         AND br.status = 'Pending'
                         """)
