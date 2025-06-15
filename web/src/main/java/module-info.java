@@ -24,4 +24,5 @@ module web {
     opens com.example.web.controllers to spring.core, spring.beans, spring.context;
     opens com.example.web.service.book to spring.beans, spring.context, spring.core;
     opens com.example.web.service.user to spring.beans, spring.context, spring.core;
+    opens com.example.web.service.like to spring.beans, spring.context, spring.core;
 }

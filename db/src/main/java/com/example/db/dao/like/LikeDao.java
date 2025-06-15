@@ -15,7 +15,7 @@ public class LikeDao {
     public void saveBookLike(String userId, Long bookId){
         jdbcClient.sql("""
                             INSERT INTO book_share.book_like (user_id, book_id) 
-                            VALUES (:userId, :bookId)
+                            VALUES (:userId::uuid, :bookId)
                             ON CONFLICT DO NOTHING;
                 """)
                 .param("userId", userId)
@@ -27,7 +27,7 @@ public class LikeDao {
     public void deleteBookLike(String userId, Long bookId){
         jdbcClient.sql("""
                             DELETE FROM book_share.book_like bl
-                            WHERE :userId = bl.user_id
+                            WHERE :userId::uuid = bl.user_id
                             AND :bookId = bl.book_id
                 """)
                 .param("userId", userId)
