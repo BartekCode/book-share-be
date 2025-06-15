@@ -26,4 +26,11 @@
                 stripComments="true"
                 splitStatements="false"/>
     </changeSet>
+    <changeSet id="004-add-indexes" author="bartek">
+        <sqlFile
+                path="changesets/indexes.sql"
+                relativeToChangelogFile="true"
+                stripComments="true"
+                splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>
