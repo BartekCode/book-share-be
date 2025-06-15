@@ -1,4 +1,4 @@
-package com.example.db.repository.user;
+package com.example.db.dao.user;
 
 import com.example.db.model.user.User;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -3,7 +3,7 @@ package com.example.web.service.book;
 import com.example.core.services.log.LogExecutionTime;
 import com.example.db.model.book.Book;
 import com.example.db.model.book.CreateBook;
-import com.example.db.repository.book.BookDao;
+import com.example.db.dao.book.BookDao;
 import com.example.db.model.book.BookBorrowRequest;
 import com.example.web.model.book.dto.response.BookResponse;
 import com.example.web.model.book.dto.response.BookBorrowResponse;

@@ -17,6 +17,7 @@ module web {
     exports com.example.web.configuration;
     exports com.example.web.service.user;
     exports com.example.web.service.book;
+    exports com.example.web.service.like;
     exports com.example.web.utils;
 
     opens com.example.web.configuration to spring.core, spring.beans, spring.context;

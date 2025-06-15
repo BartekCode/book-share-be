@@ -1,4 +1,4 @@
-package com.example.db.repository.book;
+package com.example.db.dao.book;
 
 import com.example.db.model.book.Book;
 import com.example.db.model.book.BookBorrowRequest;
