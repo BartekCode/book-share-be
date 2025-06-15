@@ -1,8 +1,8 @@
-package com.example.web.model.book;
+package com.example.web.model.book.dto.request;
 
-import com.example.web.model.Genre;
+import com.example.web.model.common.enums.Genre;
 
-public record NewBookDTO(
+public record BookCreateRequest(
         String title,
         String author,
         String imageUrl,

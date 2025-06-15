@@ -1,4 +1,4 @@
-package com.example.web.model.user.request;
+package com.example.web.model.user.dto.request;
 
 public record UserLoginRequest(
        String username,

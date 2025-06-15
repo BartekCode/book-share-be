@@ -1,10 +1,10 @@
 package com.example.web.controllers;
 
-import com.example.web.model.user.request.UserLoginRequest;
-import com.example.web.model.user.request.UserRegisterRequest;
-import com.example.web.model.user.response.UserDataResponse;
-import com.example.web.model.user.response.UserRegisterResponse;
-import com.example.web.service.UserService;
+import com.example.web.model.user.dto.request.UserLoginRequest;
+import com.example.web.model.user.dto.request.UserRegisterRequest;
+import com.example.web.model.user.dto.response.UserDataResponse;
+import com.example.web.model.user.dto.response.UserRegisterResponse;
+import com.example.web.service.user.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +30,6 @@ public class UserController {
     public UserDataResponse getUserData(
             @RequestBody() @Validated UserLoginRequest userLoginRequest
     ) {
-        return userService.getUserData(userLoginRequest);
+        return userService.getLoggedUserData(userLoginRequest);
     }
 }

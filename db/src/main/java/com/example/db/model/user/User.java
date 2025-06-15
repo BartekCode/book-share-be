@@ -1,6 +1,6 @@
-package com.example.db.model;
+package com.example.db.model.user;
 
-public record UserData(
+public record User(
         String id,
         String username,
         String email,

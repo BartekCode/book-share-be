@@ -1,9 +1,8 @@
-package com.example.db.repository.book;
+package com.example.web.model.book.dto.response;
 
-public record BookRequestData(
+public record BookBorrowResponse(
         String bookId,
         String userId,
-        String status,
         String message,
         String imageUrl,
         String username

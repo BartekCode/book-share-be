@@ -1,7 +1,8 @@
 package com.example.db.repository.book;
 
-import com.example.db.model.Book;
-import com.example.db.model.NewBook;
+import com.example.db.model.book.Book;
+import com.example.db.model.book.BookBorrowRequest;
+import com.example.db.model.book.CreateBook;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class BookRepository {
+public class BookDao {
 
     private final JdbcClient jdbcClient;
 
-    public BookRepository(JdbcClient jdbcClient) {
+    public BookDao(JdbcClient jdbcClient) {
         this.jdbcClient = jdbcClient;
     }
 
@@ -69,7 +70,7 @@ public class BookRepository {
                 .list();
     }
 
-    public void insertBook(NewBook book) {
+    public void insertBook(CreateBook book) {
         jdbcClient.sql("""
                         INSERT INTO book_share.book (user_id, title, author, image_url, description, genre)
                         VALUES (:userId::uuid, :title, :author, :imageUrl, :description, :genre)
@@ -378,7 +379,7 @@ public class BookRepository {
     }
 
 
-    public List<BookRequestData> checkPendingRequests(String userId) {
+    public List<BookBorrowRequest> checkPendingRequests(String userId) {
         return jdbcClient.sql("""
                         SELECT br.id, br.book_id AS bookId, br.user_id AS userId, br.status, br.message, b.image_url, u.username
                         FROM book_share.book_rent_request br
@@ -388,7 +389,7 @@ public class BookRepository {
                         AND br.status = 'Pending'
                         """)
                 .param("userId", userId)
-                .query(BookRequestData.class)
+                .query(BookBorrowRequest.class)
                 .list();
     }
 }

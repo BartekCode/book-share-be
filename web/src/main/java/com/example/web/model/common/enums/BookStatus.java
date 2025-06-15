@@ -1,6 +1,6 @@
-package com.example.web.model.book;
+package com.example.web.model.common.enums;
 
-public enum BookRequestStatus {
+public enum BookStatus {
     PENDING("Pending"),
     ACCEPTED("Accepted"),
     DONE("Done"),
@@ -9,7 +9,7 @@ public enum BookRequestStatus {
 
     private final String status;
 
-    BookRequestStatus(String status) {
+    BookStatus(String status) {
         this.status = status;
     }
 

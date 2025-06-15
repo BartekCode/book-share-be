@@ -1,9 +1,9 @@
 package com.example.web.controllers;
 
-import com.example.web.model.book.BookDTO;
-import com.example.web.model.book.BookRequestDTO;
-import com.example.web.model.book.NewBookDTO;
-import com.example.web.service.BookService;
+import com.example.web.model.book.dto.response.BookResponse;
+import com.example.web.model.book.dto.response.BookBorrowResponse;
+import com.example.web.model.book.dto.request.BookCreateRequest;
+import com.example.web.service.book.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +21,7 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public List<BookDTO> getAllBooks(
+    public List<BookResponse> getAllBooks(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "50") int size
     ) {
@@ -30,7 +30,7 @@ public class BookController {
 
     @PostMapping("/add")
     public void addBook(
-            @RequestBody() NewBookDTO book
+            @RequestBody() BookCreateRequest book
     ) {
         bookService.addBook(book);
     }
@@ -67,13 +67,13 @@ public class BookController {
             @RequestParam("ownerUserId") String ownerUserId,
             @RequestParam("isAccepted") Boolean isAccepted
     ) {
-        return bookService.acceptBookRequest(requestUserId, ownerUserId, bookId, isAccepted);
+        return bookService.acceptBorrowRequest(requestUserId, ownerUserId, bookId, isAccepted);
     }
 
     @GetMapping("/request/{userId}")
-    public List<BookRequestDTO> getPendingRequests(
+    public List<BookBorrowResponse> getPendingRequests(
             @PathVariable("userId") String userId
     ) {
-        return bookService.checkRequests(userId);
+        return bookService.checkBorrowRequests(userId);
     }
 }

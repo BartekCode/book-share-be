@@ -1,11 +1,11 @@
 package com.example.db.configuration;
 
-import com.example.db.repository.book.BookRepository;
-import com.example.db.repository.user.UserRepository;
+import com.example.db.repository.book.BookDao;
+import com.example.db.repository.user.UserDao;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({UserRepository.class, BookRepository.class})
+@Import({UserDao.class, BookDao.class})
 public class DbConfig {
 }

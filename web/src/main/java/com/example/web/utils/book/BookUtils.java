@@ -1,17 +1,17 @@
-package com.example.web.utils;
+package com.example.web.utils.book;
 
-import com.example.web.model.book.BookDTO;
-import com.example.web.model.Genre;
-import com.example.db.model.Book;
-import com.example.web.model.book.UserBookDTO;
+import com.example.web.model.book.dto.response.BookResponse;
+import com.example.web.model.common.enums.Genre;
+import com.example.db.model.book.Book;
+import com.example.web.model.book.dto.response.UserBookResponse;
 
 import java.util.List;
 
 public record BookUtils() {
 
-    public static List<BookDTO> getBookDTOS(List<Book> allBooks) {
+    public static List<BookResponse> getBookDTOS(List<Book> allBooks) {
         return allBooks.stream()
-                .map(book -> new BookDTO(
+                .map(book -> new BookResponse(
                         book.id(),
                         book.title(),
                         book.author(),
@@ -25,9 +25,9 @@ public record BookUtils() {
                 .toList();
     }
 
-    public static List<UserBookDTO> getUserBooksDTO(String userId, List<Book> allBooks) {
+    public static List<UserBookResponse> getUserBooksDTO(String userId, List<Book> allBooks) {
         return allBooks.stream()
-                .map(book -> new UserBookDTO(
+                .map(book -> new UserBookResponse(
                         book.id(),
                         userId,
                         book.title(),

@@ -1,8 +1,9 @@
-package com.example.web.model.book;
+package com.example.db.model.book;
 
-public record BookRequestDTO(
+public record BookBorrowRequest(
         String bookId,
         String userId,
+        String status,
         String message,
         String imageUrl,
         String username

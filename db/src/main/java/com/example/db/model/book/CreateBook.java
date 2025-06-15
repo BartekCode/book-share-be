@@ -1,6 +1,6 @@
-package com.example.db.model;
+package com.example.db.model.book;
 
-public record NewBook(
+public record CreateBook(
         String userId,
         String title,
         String author,

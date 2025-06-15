@@ -9,15 +9,18 @@ module web {
     requires spring.tx;
 
     exports com.example.web.controllers;
-    exports com.example.web.model;
+    exports com.example.web.model.book.dto.response;
+    exports com.example.web.model.book.dto.request;
+    exports com.example.web.model.user.dto.response;
+    exports com.example.web.model.user.dto.request;
+    exports com.example.web.model.common.enums;
     exports com.example.web.configuration;
-    exports com.example.web.service;
-    exports com.example.web.model.user.request;
-    exports com.example.web.model.user.response;
+    exports com.example.web.service.user;
+    exports com.example.web.service.book;
     exports com.example.web.utils;
 
     opens com.example.web.configuration to spring.core, spring.beans, spring.context;
     opens com.example.web.controllers to spring.core, spring.beans, spring.context;
-    opens com.example.web.service to spring.core, spring.beans, spring.context;
-    exports com.example.web.model.book;
+    opens com.example.web.service.book to spring.beans, spring.context, spring.core;
+    opens com.example.web.service.user to spring.beans, spring.context, spring.core;
 }
