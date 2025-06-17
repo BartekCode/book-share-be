@@ -16,7 +16,8 @@
 		<module>core</module>
 		<module>db</module>
 		<module>web</module>
-	</modules>
+        <module>security</module>
+    </modules>
 
 	<properties>
 		<revision>0.0.1-SNAPSHOT</revision>

@@ -1,6 +1,25 @@
 spring:
   application:
     name: app
+  servlet:
+    multipart:
+      max-file-size: 1MB
+  mail:
+    host: localhost
+    port: 1025
+    username: bartek
+    password: bartek
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
   datasource:
     url: jdbc:postgresql://localhost:5433/book-share-db?schema=book_share
     username: bartek
@@ -16,6 +35,11 @@ spring:
     virtual:
       enabled: true
 
+security:
+  activationCodeExpireTime: 15
+  jwt:
+    secretKey: secret
+    expiration: 8640000
 logging:
   level:
     liquibase: DEBUG

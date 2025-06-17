@@ -33,4 +33,11 @@
                 stripComments="true"
                 splitStatements="false"/>
     </changeSet>
+    <changeSet id="005-add-security-changes" author="bartek">
+        <sqlFile
+                path="changesets/securityChanges.sql"
+                relativeToChangelogFile="true"
+                stripComments="true"
+                splitStatements="false"/>
+    </changeSet>
 </databaseChangeLog>

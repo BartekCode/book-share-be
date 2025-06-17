@@ -7,6 +7,9 @@ module web {
     requires jakarta.annotation;
     requires spring.beans;
     requires spring.tx;
+    requires jakarta.validation;
+    requires liquibase.core;
+    requires spring.boot.autoconfigure;
 
     exports com.example.web.controllers;
     exports com.example.web.model.book.dto.response;
@@ -18,7 +21,6 @@ module web {
     exports com.example.web.service.user;
     exports com.example.web.service.book;
     exports com.example.web.service.like;
-    exports com.example.web.utils;
 
     opens com.example.web.configuration to spring.core, spring.beans, spring.context;
     opens com.example.web.controllers to spring.core, spring.beans, spring.context;
