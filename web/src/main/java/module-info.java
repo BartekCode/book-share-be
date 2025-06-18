@@ -10,6 +10,7 @@ module web {
     requires jakarta.validation;
     requires liquibase.core;
     requires spring.boot.autoconfigure;
+    requires jakarta.mail;
 
     exports com.example.web.controllers;
     exports com.example.web.model.book.dto.response;

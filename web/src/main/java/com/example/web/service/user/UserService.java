@@ -1,7 +1,9 @@
 package com.example.web.service.user;
 
+import com.example.core.model.email.EmailTemplateName;
 import com.example.core.model.role.RoleName;
 import com.example.core.model.user.User;
+import com.example.core.services.email.EmailService;
 import com.example.core.services.log.LogExecutionTime;
 import com.example.db.dao.role.RoleDao;
 import com.example.db.dao.token.TokenDao;
@@ -16,6 +18,7 @@ import com.example.web.model.user.dto.request.UserRegisterRequest;
 import com.example.web.model.user.dto.response.UserDataResponse;
 import com.example.web.model.user.dto.response.UserRegisterResponse;
 import com.example.core.services.encoder.PasswordEncoderService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,9 +31,12 @@ import java.util.List;
 @Service
 public class UserService {
 
+    @Value("${security.mail.activationCodeExpireTime}")
+    private static final String activation_url = "/activate";
     @Value("${security.activationCodeExpireTime}")
     private int activationCodeExpireTime;
     private PasswordEncoderService passwordEncoder;
+    private EmailService emailService;
     private UserDao userDao;
     private RoleDao roleDao;
     private TokenDao tokenDao;
@@ -59,23 +65,33 @@ public class UserService {
     public UserRegisterResponse registerUser(UserRegisterRequest userRegisterRequest) {
         String encodedPassword = passwordEncoder.encode(userRegisterRequest.password());
 
-        UserRegisterResponse userRegisterResponse = tx.execute(status -> {
+        return tx.execute(status -> {
             UserRegisterResponse registerResponse = new UserRegisterResponse(userDao.registerUser(
                     userRegisterRequest.username(),
                     encodedPassword,
                     userRegisterRequest.email()
             ));
             roleDao.insertRole(registerResponse.userId(), RoleName.USER);
-            sendValidationEmail(userRegisterRequest.email(), registerResponse.userId());
+
+            try {
+                sendValidationEmail(userRegisterRequest, registerResponse.userId());
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
             return registerResponse;
         });
-
-        return userRegisterResponse;
     }
 
-    private void sendValidationEmail(String email, String userId) {
-        String newToken = generateAndSaveActivationToken(email, userId);
-        // send email
+    private void sendValidationEmail(UserRegisterRequest user, String userId) throws MessagingException {
+        String newToken = generateAndSaveActivationToken(user.email(), userId);
+        emailService.sendEmail(
+                user.email(),
+                user.username(),
+                EmailTemplateName.ACTIVATE_ACCOUNT,
+                activation_url,
+                newToken,
+                "Aktywacja konta"
+                );
     }
 
     private String generateAndSaveActivationToken(String email, String userId) {

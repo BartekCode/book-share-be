@@ -40,7 +40,8 @@ public class SecurityConfig {
                 // wymieniamy urle bez autoryzacji czyli pobranie ksiazek i login
                 .authorizeHttpRequests(req -> req.requestMatchers(
                                         "/v1/book/all",
-                                        "/v1/user/register"
+                                        "/v1/user/register",
+                                        "/v1/user/login"
                                 )
                                 .permitAll()
                                 // pozostale autoryzuj

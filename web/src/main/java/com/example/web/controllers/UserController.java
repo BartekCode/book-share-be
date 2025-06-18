@@ -28,6 +28,14 @@ public class UserController {
         return userService.registerUser(userRegisterRequest);
     }
 
+    //TODO endpoint /register a pozniej /data wywoływany z tokenem
+    @PostMapping("/login")
+    public UserDataResponse loginUser(
+            @RequestBody() @Valid UserLoginRequest userLoginRequest
+    ) {
+        return userService.getLoggedUserData(userLoginRequest);
+    }
+
     @PostMapping("/data")
     public UserDataResponse getUserData(
             @RequestBody() @Valid UserLoginRequest userLoginRequest

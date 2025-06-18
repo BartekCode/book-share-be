@@ -36,6 +36,9 @@ spring:
       enabled: true
 
 security:
+  mail:
+    from: "BookShare App"
+    activationUrl: http//localhost:4200/activate-account
   activationCodeExpireTime: 15
   jwt:
     secretKey: secret
