@@ -18,9 +18,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${security.jwt,expiration}")
+    @Value("${security.jwt.expiration}")
     private long jwtExpiration;
-    @Value("${security.jwt,secretKey}")
+    @Value("${security.jwt.secretKey}")
     private String secretKey;
 
     public String generateToken(UserDetails userDetails) {
@@ -50,7 +50,7 @@ public class JwtService {
                 .getPayload();
     }
 
-    private String generateToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(HashMap<String, Object> extraClaims, UserDetails userDetails) {
         List<String> authorities = userDetails.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)

@@ -1,15 +1,14 @@
 package com.example.web.controllers;
 
-import com.example.web.model.book.dto.response.BookResponse;
-import com.example.web.model.book.dto.response.BookBorrowResponse;
 import com.example.web.model.book.dto.request.BookCreateRequest;
+import com.example.web.model.book.dto.response.BookBorrowResponse;
+import com.example.web.model.book.dto.response.BookResponse;
 import com.example.web.service.book.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/v1/book")
 public class BookController {

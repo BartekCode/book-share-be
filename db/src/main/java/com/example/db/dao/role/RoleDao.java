@@ -17,7 +17,7 @@ public class RoleDao {
     public void insertRole(String userId, RoleName role) {
         jdbcClient.sql("""
                         INSERT INTO book_share.user_role (user_id, role_value)
-                        VALUES (:userId:uuid, :role)
+                        VALUES (:userId::uuid, :role)
                         ON CONFLICT (user_id, role_value) DO NOTHING;
                         """)
                 .param("userId", userId)

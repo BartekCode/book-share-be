@@ -3,11 +3,11 @@ package com.example.core.services.email;
 import com.example.core.model.email.EmailTemplateName;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -18,17 +18,20 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${spring.mail.from}")
+    @Value("${mail.from}")
     private String email;
-    private final JavaMailSender javaMailSender;
-    private final SpringTemplateEngine templateEngine;
+    private JavaMailSender javaMailSender;
+    private SpringTemplateEngine templateEngine;
 
+    @Autowired
     public EmailService(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
     }
 
-    @Async
+    public EmailService() {
+    }
+
     public void sendEmail(
             String to,
             String username,
@@ -41,7 +44,7 @@ public class EmailService {
         if (emailTemplateName == null){
             templateName = "confirm_email";
         } else {
-            templateName = emailTemplateName.name();
+            templateName = emailTemplateName.getTemplateName();
         }
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(

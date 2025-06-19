@@ -4,6 +4,9 @@ spring:
   servlet:
     multipart:
       max-file-size: 1MB
+  thymeleaf:
+    prefix: classpath:templates/
+    suffix: .html
   mail:
     host: localhost
     port: 1025
@@ -14,8 +17,8 @@ spring:
         smtp:
           trust: "*"
           starttls:
-            enable: true
-            required: true
+            enable: false
+            required: false
           auth: true
           connectiontimeout: 5000
           timeout: 5000
@@ -35,14 +38,15 @@ spring:
     virtual:
       enabled: true
 
+mail:
+  from: "bookshare@gmail.com"
+  activationUrl: http//localhost:4200/activate-account
+
 security:
-  mail:
-    from: "BookShare App"
-    activationUrl: http//localhost:4200/activate-account
-  activationCodeExpireTime: 15
+  activationCodeExpireTime: 120
   jwt:
-    secretKey: secret
-    expiration: 8640000
+    secretKey: zFwPKYRM4OFeVtMRHoLPbSxi6zbyj5rwMHCPzEELh3I=
+    expiration: 86400000
 logging:
   level:
     liquibase: DEBUG

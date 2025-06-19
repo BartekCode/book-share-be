@@ -4,7 +4,6 @@ import com.example.web.service.like.LikeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/v1/like")
 public class LikeController {

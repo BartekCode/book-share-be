@@ -4,9 +4,13 @@ public enum EmailTemplateName {
     // sprign bedzie szukac takiego html template w naszym templates
     ACTIVATE_ACCOUNT("activate_account");
 
-    private final String name;
+    private final String templateName;
 
-    EmailTemplateName(String name) {
-        this.name = name;
+    EmailTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+    public String getTemplateName() {
+        return templateName;
     }
 }

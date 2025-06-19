@@ -19,7 +19,7 @@ public class UserDao {
 
     public String registerUser(String username, String password, String email) {
         return jdbcClient.sql("""
-                        INSERT INTO book_share.user (username, password, email, aacount_locked, enabled)
+                        INSERT INTO book_share.user (username, password, email, account_locked, enabled)
                         VALUES (:username, :password, :email, false, false)
                         RETURNING id;
                         """)
@@ -54,8 +54,11 @@ public class UserDao {
                     String pwd = rs.getString("password");
                     boolean accountLocked = rs.getBoolean("account_locked");
                     boolean enabled = rs.getBoolean("enabled");
-                    LocalDateTime lastModifiedDate = rs.getTimestamp("last_modified_date").toLocalDateTime();
-                    String[] roles = (String[]) rs.getArray("roles").getArray();
+                    LocalDateTime lastModifiedDate = rs.getTimestamp("last_modified_date") != null
+                            ? rs.getTimestamp("last_modified_date").toLocalDateTime()
+                            : null;
+                    Object[] rolesObj = (Object[]) rs.getArray("roles").getArray();
+                    String[] roles = Arrays.stream(rolesObj).map(Object::toString).toArray(String[]::new);
                     return new User(
                             id,
                             uname,
@@ -65,10 +68,22 @@ public class UserDao {
                             enabled,
                             lastModifiedDate,
                             Arrays.stream(roles)
-                                    .map(RoleName::valueOf)
+                                    .map(r -> RoleName.valueOf(r.toUpperCase()))
                                     .toList()
                     );
                 })
                 .single();
+    }
+
+    public void enableAccount(String userId, String username) {
+        jdbcClient.sql("""
+                        UPDATE book_share.user u
+                        SET last_modified_date = NOW(), enabled = true
+                        WHERE u.id = :userId::uuid
+                        AND u.username = :username
+                        """)
+                .param("username", username)
+                .param("userId", userId)
+                .update();
     }
 }

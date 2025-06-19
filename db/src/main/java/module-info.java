@@ -7,6 +7,7 @@ module db {
     requires spring.jdbc;
     requires java.management;
     requires spring.security.core;
+    requires spring.tx;
 
     exports com.example.db.dao.book;
     exports com.example.db.dao.user;
