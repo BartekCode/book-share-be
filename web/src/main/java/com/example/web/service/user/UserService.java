@@ -154,10 +154,7 @@ public class UserService {
     public UserDataResponse getLoggedUserData(String username, String password) {
         return tx.execute(status -> {
             User user = userDao.getUserDataByName(username);
-            if (passwordEncoder.matches(
-                    password,
-                    user.password()
-            )) {
+            if (password.equals(user.password())) {
                 return new UserDataResponse(
                         user.id(),
                         user.username(),

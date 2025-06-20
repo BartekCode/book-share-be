@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/v1/user")
 public class UserController {
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/confirm")
-    public void getUserData(
+    public void confirmRegistration(
             @RequestParam("token") String token,
             @RequestParam("username") String username
     ) throws MessagingException {

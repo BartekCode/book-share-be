@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/v1/book")
 public class BookController {
@@ -66,10 +67,10 @@ public class BookController {
     public Long acceptBookRequest(
             @PathVariable("bookId") Long bookId,
             @AuthenticationPrincipal User userData,
-            @RequestParam("ownerUserId") String ownerUserId,
-            @RequestParam("isAccepted") Boolean isAccepted
+            @RequestParam("isAccepted") Boolean isAccepted,
+            @RequestParam("requestId") Long requestId
     ) {
-        return bookService.acceptBorrowRequest(userData.id(), ownerUserId, bookId, isAccepted);
+        return bookService.acceptBorrowRequest(requestId, bookId, isAccepted);
     }
 
     @GetMapping("/request")

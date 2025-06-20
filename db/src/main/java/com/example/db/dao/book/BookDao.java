@@ -352,8 +352,7 @@ public class BookDao {
     }
 
     public Long updateBookRequest(
-            String requestUserId,
-            String ownerUserId,
+            Long requestId,
             Long bookId,
             String expectedStatus,
             String status
@@ -363,14 +362,12 @@ public class BookDao {
                         SET status = :status
                         FROM book_share.book b
                         WHERE br.book_id = b.id
-                          AND b.user_id = :ownerUserId::uuid
                           AND br.status = :expectedStatus
                           AND br.book_id = :bookId
-                          AND br.user_id = :requestUserId::uuid
+                          AND br.id = :requestId
                         RETURNING br.id;
                             """)
-                .param("requestUserId", requestUserId)
-                .param("ownerUserId",ownerUserId)
+                .param("requestId", requestId)
                 .param("bookId", bookId)
                 .param("status", status)
                 .param("expectedStatus",expectedStatus)
@@ -381,7 +378,7 @@ public class BookDao {
 
     public List<BookBorrowRequest> checkPendingRequests(String userId) {
         return jdbcClient.sql("""
-                        SELECT br.id, br.book_id AS bookId, br.user_id AS userId, br.status, br.message, b.image_url, u.username
+                        SELECT br.id AS requestId, br.book_id AS bookId, br.status, br.message, b.image_url, u.username, b.title
                         FROM book_share.book_rent_request br
                         JOIN book_share.book b ON br.book_id = b.id
                         JOIN book_share.user u ON br.user_id = u.id

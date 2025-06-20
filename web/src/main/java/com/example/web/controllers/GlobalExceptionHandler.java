@@ -22,10 +22,11 @@ import java.util.Set;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<ExceptionResponse> handleException(LockedException ex){
+    public ResponseEntity<ExceptionResponse> handleException(LockedException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ExceptionResponse(
@@ -38,7 +39,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ExceptionResponse> handleException(DisabledException ex){
+    public ResponseEntity<ExceptionResponse> handleException(DisabledException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ExceptionResponse(
@@ -51,7 +53,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponse> handleException(BadCredentialsException ex){
+    public ResponseEntity<ExceptionResponse> handleException(BadCredentialsException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ExceptionResponse(
@@ -64,7 +67,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ExceptionResponse> handleException(MessagingException ex){
+    public ResponseEntity<ExceptionResponse> handleException(MessagingException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ExceptionResponse(
@@ -77,14 +81,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> handleException(MethodArgumentNotValidException ex){
+    public ResponseEntity<ExceptionResponse> handleException(MethodArgumentNotValidException ex) {
         Set<String> errors = new HashSet<>();
         ex.getBindingResult().getAllErrors()
                 .forEach(error -> {
                     String errorMsg = error.getDefaultMessage();
                     errors.add(errorMsg);
                 });
-
+        log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(
@@ -97,7 +101,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ServletRequestBindingException.class)
-    public ResponseEntity<ExceptionResponse> handleException(ServletRequestBindingException  ex){
+    public ResponseEntity<ExceptionResponse> handleException(ServletRequestBindingException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(
@@ -110,7 +115,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> handleException(Exception ex){
+    public ResponseEntity<ExceptionResponse> handleException(Exception ex) {
         log.error(ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

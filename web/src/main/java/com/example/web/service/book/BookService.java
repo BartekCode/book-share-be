@@ -72,9 +72,9 @@ public class BookService {
     }
 
     @LogExecutionTime
-    public Long acceptBorrowRequest(String requestUserId, String ownerUserId, Long bookId, Boolean isAccepted) {
+    public Long acceptBorrowRequest(Long requestId, Long bookId, Boolean isAccepted) {
         BookStatus status = isAccepted ? BookStatus.ACCEPTED : BookStatus.REJECTED;
-        return tx.execute(status1 -> bookDao.updateBookRequest(requestUserId, ownerUserId, bookId, BookStatus.PENDING.getStatus(), status.getStatus()));
+        return tx.execute(status1 -> bookDao.updateBookRequest(requestId, bookId, BookStatus.PENDING.getStatus(), status.getStatus()));
     }
 
     @LogExecutionTime
@@ -86,10 +86,11 @@ public class BookService {
         return dataList.stream()
                 .map(data -> new BookBorrowResponse(
                         data.bookId(),
-                        data.userId(),
+                        data.requestId(),
                         data.message(),
                         data.imageUrl(),
-                        data.username()
+                        data.username(),
+                        data.title()
                 ))
                 .toList();
     }
