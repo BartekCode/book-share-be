@@ -2,9 +2,10 @@ package com.example.web.model.book.dto.response;
 
 public record BookBorrowResponse(
         String bookId,
-        String userId,
+        String requestId,
         String message,
         String imageUrl,
-        String username
+        String username,
+        String title
 ) {
 }

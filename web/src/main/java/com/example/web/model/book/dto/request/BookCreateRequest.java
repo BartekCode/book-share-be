@@ -7,7 +7,6 @@ public record BookCreateRequest(
         String author,
         String imageUrl,
         String description,
-        Genre genre,
-        String userId
+        Genre genre
 ) {
 }

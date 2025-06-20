@@ -1,6 +1,28 @@
 spring:
   application:
     name: app
+  servlet:
+    multipart:
+      max-file-size: 1MB
+  thymeleaf:
+    prefix: classpath:templates/
+    suffix: .html
+  mail:
+    host: localhost
+    port: 1025
+    username: bartek
+    password: bartek
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+          starttls:
+            enable: false
+            required: false
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
   datasource:
     url: jdbc:postgresql://localhost:5433/book-share-db?schema=book_share
     username: bartek
@@ -16,6 +38,15 @@ spring:
     virtual:
       enabled: true
 
+mail:
+  from: "bookshare@gmail.com"
+  activationUrl: http//localhost:4200/activate-account
+
+security:
+  activationCodeExpireTime: 120
+  jwt:
+    secretKey: zFwPKYRM4OFeVtMRHoLPbSxi6zbyj5rwMHCPzEELh3I=
+    expiration: 86400000
 logging:
   level:
     liquibase: DEBUG

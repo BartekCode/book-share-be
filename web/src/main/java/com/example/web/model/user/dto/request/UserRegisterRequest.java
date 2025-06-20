@@ -1,8 +1,17 @@
 package com.example.web.model.user.dto.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public record UserRegisterRequest(
-       String username,
-       String password,
-       String email
+        @NotBlank(message = "Username is mandatory")
+        String username,
+        @NotBlank(message = "Password is mandatory")
+        @Size(min = 6, message = "Password should be 8 characters long minimum")
+        String password,
+        @NotBlank(message = "Email is mandatory")
+        @Email(message = "Bad format")
+        String email
 ) {
 }
