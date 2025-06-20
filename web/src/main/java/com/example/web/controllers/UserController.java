@@ -5,7 +5,6 @@ import com.example.web.model.user.dto.request.UserLoginRequest;
 import com.example.web.model.user.dto.request.UserRegisterRequest;
 import com.example.web.model.user.dto.response.UserDataResponse;
 import com.example.web.model.user.dto.response.UserLoginResponse;
-import com.example.web.model.user.dto.response.UserRegisterResponse;
 import com.example.web.service.user.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -25,10 +24,10 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public UserRegisterResponse register(
+    public void register(
             @RequestBody() @Valid UserRegisterRequest userRegisterRequest
     ) {
-        return userService.registerUser(userRegisterRequest);
+        userService.registerUser(userRegisterRequest);
     }
 
     @PostMapping("/login")

@@ -20,7 +20,6 @@ import com.example.web.model.user.dto.request.UserLoginRequest;
 import com.example.web.model.user.dto.request.UserRegisterRequest;
 import com.example.web.model.user.dto.response.UserDataResponse;
 import com.example.web.model.user.dto.response.UserLoginResponse;
-import com.example.web.model.user.dto.response.UserRegisterResponse;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,23 +77,22 @@ public class UserService {
     }
 
     @LogExecutionTime
-    public UserRegisterResponse registerUser(UserRegisterRequest userRegisterRequest) {
+    public void registerUser(UserRegisterRequest userRegisterRequest) {
         String encodedPassword = passwordEncoder.encode(userRegisterRequest.password());
-
-        return tx.execute(status -> {
-            UserRegisterResponse registerResponse = new UserRegisterResponse(userDao.registerUser(
+        tx.execute(status -> {
+            String userId = userDao.registerUser(
                     userRegisterRequest.username(),
                     encodedPassword,
                     userRegisterRequest.email()
-            ));
-            roleDao.insertRole(registerResponse.userId(), RoleName.USER);
+            );
+            roleDao.insertRole(userId, RoleName.USER);
             try {
-                sendValidationEmail(userRegisterRequest.email(), userRegisterRequest.username(), registerResponse.userId());
+                sendValidationEmail(userRegisterRequest.email(), userRegisterRequest.username(), userId);
             } catch (MessagingException e) {
                 status.setRollbackOnly();
                 throw new RuntimeException("Failed to send email", e);
             }
-            return registerResponse;
+            return null;
         });
     }
 
