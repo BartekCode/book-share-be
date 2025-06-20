@@ -39,10 +39,10 @@ public class BookService {
     }
 
     @LogExecutionTime
-    public void addBook(BookCreateRequest book) {
+    public void addBook(BookCreateRequest book, String userId) {
         tx.execute(status -> {
             bookDao.insertBook(new CreateBook(
-                    book.userId(),
+                    userId,
                     book.title(),
                     book.author(),
                     book.imageUrl(),

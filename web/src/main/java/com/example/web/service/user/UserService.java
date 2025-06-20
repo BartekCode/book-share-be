@@ -153,11 +153,11 @@ public class UserService {
     }
 
     @LogExecutionTime
-    public UserDataResponse getLoggedUserData(UserLoginRequest userLoginRequest) {
+    public UserDataResponse getLoggedUserData(String username, String password) {
         return tx.execute(status -> {
-            User user = userDao.getUserDataByName(userLoginRequest.username());
+            User user = userDao.getUserDataByName(username);
             if (passwordEncoder.matches(
-                    userLoginRequest.password(),
+                    password,
                     user.password()
             )) {
                 return new UserDataResponse(

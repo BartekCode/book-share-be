@@ -1,14 +1,16 @@
 package com.example.web.controllers;
 
+import com.example.core.model.user.User;
 import com.example.web.model.user.dto.request.UserLoginRequest;
 import com.example.web.model.user.dto.request.UserRegisterRequest;
-import com.example.web.model.user.dto.response.UserLoginResponse;
 import com.example.web.model.user.dto.response.UserDataResponse;
+import com.example.web.model.user.dto.response.UserLoginResponse;
 import com.example.web.model.user.dto.response.UserRegisterResponse;
 import com.example.web.service.user.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,7 +48,8 @@ public class UserController {
 
     @GetMapping("/data")
     public UserDataResponse getUserData(
+            @AuthenticationPrincipal User userData
     ) {
-        return null;
+        return userService.getLoggedUserData(userData.username(), userData.password());
     }
 }

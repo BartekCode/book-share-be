@@ -1,10 +1,12 @@
 package com.example.web.controllers;
 
+import com.example.core.model.user.User;
 import com.example.web.model.book.dto.request.BookCreateRequest;
 import com.example.web.model.book.dto.response.BookBorrowResponse;
 import com.example.web.model.book.dto.response.BookResponse;
 import com.example.web.service.book.BookService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,50 +31,51 @@ public class BookController {
 
     @PostMapping("/add")
     public void addBook(
-            @RequestBody() BookCreateRequest book
+            @RequestBody() BookCreateRequest book,
+            @AuthenticationPrincipal User userData
     ) {
-        bookService.addBook(book);
+        bookService.addBook(book, userData.id());
     }
 
     @DeleteMapping("/remove/{bookId}")
     public ResponseEntity<Void> removeBook(
             @PathVariable("bookId") Long bookId,
-            @RequestParam("userId") String userId
+            @AuthenticationPrincipal User userData
     ) {
-        bookService.removeBook(userId, bookId);
+        bookService.removeBook(userData.id(), bookId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/borrow/{bookId}")
     public Long borrowBook(
             @PathVariable("bookId") Long bookId,
-            @RequestParam("userId") String userId
+            @AuthenticationPrincipal User userData
     ) {
-        return bookService.borrowBook(userId, bookId);
+        return bookService.borrowBook(userData.id(), bookId);
     }
 
     @PutMapping("/return/{bookId}")
     public Long returnBook(
             @PathVariable("bookId") Long bookId,
-            @RequestParam("userId") String userId
+            @AuthenticationPrincipal User userData
     ) {
-        return bookService.returnBook(userId, bookId);
+        return bookService.returnBook(userData.id(), bookId);
     }
 
     @PutMapping("/accept/{bookId}")
     public Long acceptBookRequest(
             @PathVariable("bookId") Long bookId,
-            @RequestParam("requestUserId") String requestUserId,
+            @AuthenticationPrincipal User userData,
             @RequestParam("ownerUserId") String ownerUserId,
             @RequestParam("isAccepted") Boolean isAccepted
     ) {
-        return bookService.acceptBorrowRequest(requestUserId, ownerUserId, bookId, isAccepted);
+        return bookService.acceptBorrowRequest(userData.id(), ownerUserId, bookId, isAccepted);
     }
 
-    @GetMapping("/request/{userId}")
+    @GetMapping("/request")
     public List<BookBorrowResponse> getPendingRequests(
-            @PathVariable("userId") String userId
+            @AuthenticationPrincipal User userData
     ) {
-        return bookService.checkBorrowRequests(userId);
+        return bookService.checkBorrowRequests(userData.id());
     }
 }
