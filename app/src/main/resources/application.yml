@@ -43,6 +43,8 @@ mail:
   activationUrl: http//localhost:4200/activate-account
 
 security:
+  frontend:
+    url: http://localhost:4200/
   activationCodeExpireTime: 120
   jwt:
     secretKey: zFwPKYRM4OFeVtMRHoLPbSxi6zbyj5rwMHCPzEELh3I=
