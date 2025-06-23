@@ -14,17 +14,16 @@ spring:
     prefix: classpath:templates/
     suffix: .html
   mail:
-    host: localhost
-    port: 1025
-    username: bartek
-    password: bartek
+    host: smtp.gmail.com
+    port: 587
+    username: booksare2025@gmail.com
+    password: laac jihi ocik wasn
     properties:
       mail:
         smtp:
           trust: "*"
           starttls:
-            enable: false
-            required: false
+            enable: true
           auth: true
           connectiontimeout: 5000
           timeout: 5000
