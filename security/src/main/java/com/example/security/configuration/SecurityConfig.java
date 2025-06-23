@@ -5,6 +5,7 @@ import com.example.security.filter.JwtAuthenticationFilter;
 import com.example.security.service.JwtService;
 import com.example.security.service.SecurityService;
 import com.example.security.service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -20,6 +21,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -29,11 +36,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Import({SecurityService.class, JwtAuthenticationFilter.class, JwtService.class, UserDetailsServiceImpl.class})
 public class SecurityConfig {
 
+    @Value("${security.frontend.url}")
+    private String feAppUrl;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final PasswordEncoderService passwordEncoderService;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, PasswordEncoderService passwordEncoderService, UserDetailsService userDetailsService) {
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            PasswordEncoderService passwordEncoderService,
+            UserDetailsService userDetailsService
+    ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.passwordEncoderService = passwordEncoderService;
         this.userDetailsService = userDetailsService;
@@ -49,6 +62,19 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Collections.singletonList(feAppUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean

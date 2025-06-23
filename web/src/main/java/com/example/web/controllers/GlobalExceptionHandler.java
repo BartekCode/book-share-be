@@ -24,6 +24,8 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+//    TODO dodac błąd przy rejestracji ze juz taki user albo email istnieje w db
+
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<ExceptionResponse> handleException(LockedException ex) {
         log.error(ex.getMessage());

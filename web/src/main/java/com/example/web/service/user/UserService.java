@@ -123,7 +123,7 @@ public class UserService {
     public void activateUserAccount(String token, String username) throws MessagingException {
         TokenData savedToken = tokenDao.retrieveToken(token, username)
                 .orElseThrow(() -> new RuntimeException("No token found!"));
-        if (LocalDateTime.now().isAfter(savedToken.expiresAt()) && !savedToken.enabled()){
+        if (LocalDateTime.now().isAfter(savedToken.expiresAt()) && !savedToken.enabled()) {
             sendValidationEmail(savedToken.email(), savedToken.username(), savedToken.userId());
             throw new RuntimeException("Activation token has expired. A new token has been sent");
         }
@@ -137,7 +137,7 @@ public class UserService {
                 sanitizedEmail,
                 username,
                 EmailTemplateName.ACTIVATE_ACCOUNT,
-                activation_url,
+                createActivationUrl(activation_url, username),
                 newToken,
                 "Aktywacja konta"
         );
@@ -148,6 +148,10 @@ public class UserService {
         Token token = new Token(activationCode, LocalDateTime.now().plusMinutes(activationCodeExpireTime));
         tokenDao.insertToken(userId, token);
         return activationCode;
+    }
+
+    private String createActivationUrl(String url, String username) {
+        return url + "?username=" + username;
     }
 
     @LogExecutionTime
