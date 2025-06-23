@@ -31,8 +31,8 @@ spring:
           writetimeout: 5000
   datasource:
     url: jdbc:postgresql://book-share-db.postgres.database.azure.com:5432/booksharedb?sslmode=require
-    username: ${DB-USER}
-    password: ${DB-PASSWORD}
+    username: bookshare123
+    password: "!Ksiazka123"
     hikari:
       minimum-idle: 5
       maximum-pool-size: 10
@@ -53,16 +53,8 @@ security:
     url: https://black-glacier-050ecbf03.2.azurestaticapps.net/
   activationCodeExpireTime: 120
   jwt:
-    secretKey: ${JWT-SECRET}
+    secretKey: zFwPKYRM4OFeVtMRHoLPbSxi6zbyj5rwMHCPzEELh3I=
     expiration: 86400000
-
-azure:
-  keyvault:
-    enabled: true
-    vault-name: book-share-vault
-    tenant-id: YOUR-TENANT-ID
-    client-id: YOUR-CLIENT-ID
-    client-secret: YOUR-CLIENT-SECRET
 
 logging:
   level:
