@@ -4,12 +4,6 @@ spring:
   servlet:
     multipart:
       max-file-size: 1MB
-  cloud:
-    azure:
-      keyvault:
-        secret:
-          enabled: true
-          endpoint: https://book-share.vault.azure.net/
   thymeleaf:
     prefix: classpath:templates/
     suffix: .html
@@ -31,8 +25,8 @@ spring:
           writetimeout: 5000
   datasource:
     url: jdbc:postgresql://book-share-db.postgres.database.azure.com:5432/booksharedb?sslmode=require
-    username: ${DB-USER}
-    password: ${DB-PASSWORD}
+    username: bookshare123
+    password: "!Ksiazka123"
     hikari:
       minimum-idle: 5
       maximum-pool-size: 10
@@ -46,24 +40,15 @@ spring:
 
 mail:
   from: "bookshare@gmail.com"
-  activationUrl: https://black-glacier-050ecbf03.2.azurestaticapps.net/activate-account
+  activationUrl: http://localhost:4200/activate-account
 
 security:
   frontend:
-    url: https://black-glacier-050ecbf03.2.azurestaticapps.net/
+    url: http://localhost:4200/
   activationCodeExpireTime: 120
   jwt:
-    secretKey: ${JWT-SECRET}
+    secretKey: zFwPKYRM4OFeVtMRHoLPbSxi6zbyj5rwMHCPzEELh3I=
     expiration: 86400000
-
-azure:
-  keyvault:
-    enabled: true
-    vault-name: book-share-vault
-    tenant-id: YOUR-TENANT-ID
-    client-id: YOUR-CLIENT-ID
-    client-secret: YOUR-CLIENT-SECRET
-
 logging:
   level:
     liquibase: DEBUG

@@ -13,6 +13,7 @@
         <liquibase.version>4.25.0</liquibase.version>
         <jwt.version>0.12.5</jwt.version>
         <springdoc-openapi.version>2.8.5</springdoc-openapi.version>
+        <azure-spring-boot.version>3.14.0</azure-spring-boot.version>
     </properties>
     <packaging>pom</packaging>
     <dependencyManagement>
@@ -48,6 +49,11 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc-openapi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.azure.spring</groupId>
+                <artifactId>azure-spring-boot-starter-keyvault-secrets</artifactId>
+                <version>${azure-spring-boot.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
