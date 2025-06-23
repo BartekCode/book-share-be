@@ -31,6 +31,9 @@ jobs:
           name: java-app
           path: target/*.jar
 
+      - name: Check contents of target directory
+        run: ls -al target
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
