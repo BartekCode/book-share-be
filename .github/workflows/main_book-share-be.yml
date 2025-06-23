@@ -60,5 +60,6 @@ jobs:
         with:
           app-name: 'book-share-be'
           slot-name: 'Production'
-          package: '*.jar'
+          package: 'java-app/*.jar'
+
           
