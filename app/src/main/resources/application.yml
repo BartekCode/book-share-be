@@ -16,14 +16,16 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: booksare2025@gmail.com
-    password: laac jihi ocik wasn
+    username: bookshare2025@gmail.com
+    password: "taer swox qqpp duum"
     properties:
       mail:
         smtp:
           trust: "*"
           starttls:
             enable: true
+          ssl:
+            trust: smtp.gmail.com
           auth: true
           connectiontimeout: 5000
           timeout: 5000
