@@ -1,5 +1,6 @@
 package com.example.web.controllers;
 
+import com.example.db.exceptions.DbException;
 import com.example.web.model.excpetion.BusinessErrorCodes;
 import com.example.web.model.excpetion.ExceptionResponse;
 import jakarta.mail.MessagingException;
@@ -124,6 +125,20 @@ public class GlobalExceptionHandler {
                 .body(new ExceptionResponse(
                         999,
                         "Internal error, contact the admin",
+                        ex.getMessage(),
+                        Set.of(),
+                        Map.of()
+                ));
+    }
+
+    @ExceptionHandler(DbException.class)
+    public ResponseEntity<ExceptionResponse> handleException(DbException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ExceptionResponse(
+                        BusinessErrorCodes.DB_EXCEPTION.getCode(),
+                        ex.getBusinessDesc(),
                         ex.getMessage(),
                         Set.of(),
                         Map.of()

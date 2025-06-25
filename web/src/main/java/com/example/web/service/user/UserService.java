@@ -9,7 +9,8 @@ import com.example.core.services.log.LogExecutionTime;
 import com.example.db.dao.book.BookDao;
 import com.example.db.dao.role.RoleDao;
 import com.example.db.dao.token.TokenDao;
-import com.example.db.dao.token.TokenData;
+import com.example.db.exceptions.DbException;
+import com.example.db.model.token.TokenData;
 import com.example.db.dao.user.UserDao;
 import com.example.db.model.book.Book;
 import com.example.db.model.token.Token;
@@ -122,7 +123,7 @@ public class UserService {
     @LogExecutionTime
     public void activateUserAccount(String token, String username) throws MessagingException {
         TokenData savedToken = tokenDao.retrieveToken(token, username)
-                .orElseThrow(() -> new RuntimeException("No token found!"));
+                .orElseThrow(() -> new DbException("No token found!", "Nie znaleziono tokenu!"));
         if (LocalDateTime.now().isAfter(savedToken.expiresAt()) && !savedToken.enabled()) {
             sendValidationEmail(savedToken.email(), savedToken.username(), savedToken.userId());
             throw new RuntimeException("Activation token has expired. A new token has been sent");

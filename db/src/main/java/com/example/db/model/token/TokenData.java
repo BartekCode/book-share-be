@@ -1,4 +1,4 @@
-package com.example.db.dao.token;
+package com.example.db.model.token;
 
 import java.time.LocalDateTime;
 

@@ -2,6 +2,7 @@ package com.example.db.dao.user;
 
 import com.example.core.model.role.RoleName;
 import com.example.core.model.user.User;
+import com.example.db.exceptions.DbException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +19,23 @@ public class UserDao {
     }
 
     public String registerUser(String username, String password, String email) {
-        return jdbcClient.sql("""
+        try {
+            return jdbcClient.sql("""
                         INSERT INTO book_share.user (username, password, email, account_locked, enabled)
                         VALUES (:username, :password, :email, false, false)
                         RETURNING id;
                         """)
-                .param("username", username)
-                .param("password", password)
-                .param("email", email)
-                .query(String.class)
-                .single();
+                    .param("username", username)
+                    .param("password", password)
+                    .param("email", email)
+                    .query(String.class)
+                    .single();
+        } catch (Exception ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("duplicate key")) {
+                throw new DbException("Username or email already exists","Login lub email istnieje już w bazie danych.", ex);
+            }
+            throw new DbException("Failed to register user", "Wystąpił błąd podczas rejestracji.", ex);
+        }
     }
 
     public User getUserDataByName(String username) {

@@ -13,6 +13,7 @@ public enum BusinessErrorCodes {
     BAD_CREDENTIALS(304, "Login and / or password is incorrect", FORBIDDEN),
     EMAIL_NOT_SENT(305, "Error occurred during sending an email", INTERNAL_SERVER_ERROR),
     INVALID_PARAMETERS(306, "Invalid parameters provided", INTERNAL_SERVER_ERROR),
+    DB_EXCEPTION(307, "DB error occurred", BAD_REQUEST),
     ;
     private final int code;
     private final String description;

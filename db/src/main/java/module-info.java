@@ -23,4 +23,5 @@ module db {
     opens com.example.db.dao.like to spring.beans, spring.context, spring.core;
     exports com.example.db.dao.role;
     exports com.example.db.dao.token;
+    exports com.example.db.exceptions;
 }
