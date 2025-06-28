@@ -56,7 +56,8 @@ public class UserService {
     public UserService(
             PasswordEncoderService passwordEncoder,
             EmailService emailService,
-            AuthenticationManager authenticationManager, JwtService jwtService,
+            AuthenticationManager authenticationManager,
+            JwtService jwtService,
             UserDao userDao,
             RoleDao roleDao,
             TokenDao tokenDao,
