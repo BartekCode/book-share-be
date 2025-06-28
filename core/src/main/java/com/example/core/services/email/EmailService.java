@@ -18,15 +18,15 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${mail.from}")
     private String email;
     private JavaMailSender javaMailSender;
     private SpringTemplateEngine templateEngine;
 
     @Autowired
-    public EmailService(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine) {
+    public EmailService(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine, @Value("${mail.from}") String email) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
+        this.email = email;
     }
 
     public EmailService() {
@@ -41,7 +41,7 @@ public class EmailService {
             String subject
     ) throws MessagingException {
         String templateName;
-        if (emailTemplateName == null){
+        if (emailTemplateName == null) {
             templateName = "confirm_email";
         } else {
             templateName = emailTemplateName.getTemplateName();

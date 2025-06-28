@@ -5,6 +5,7 @@ import com.example.security.filter.JwtAuthenticationFilter;
 import com.example.security.service.JwtService;
 import com.example.security.service.SecurityService;
 import com.example.security.service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,26 +31,31 @@ import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 @Import({SecurityService.class, JwtAuthenticationFilter.class, JwtService.class, UserDetailsServiceImpl.class})
 public class SecurityConfig {
 
-    @Value("${security.frontend.url}")
     private String feAppUrl;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final PasswordEncoderService passwordEncoderService;
-    private final UserDetailsService userDetailsService;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private PasswordEncoderService passwordEncoderService;
+    private UserDetailsService userDetailsService;
 
+    public SecurityConfig() {
+    }
+
+    @Autowired
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
             PasswordEncoderService passwordEncoderService,
-            UserDetailsService userDetailsService
+            UserDetailsService userDetailsService,
+            @Value("${security.frontend.url}") String feAppUrl
     ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.passwordEncoderService = passwordEncoderService;
         this.userDetailsService = userDetailsService;
+        this.feAppUrl = feAppUrl;
     }
 
     @Bean

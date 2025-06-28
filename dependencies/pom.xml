@@ -14,6 +14,9 @@
         <jwt.version>0.12.5</jwt.version>
         <springdoc-openapi.version>2.8.5</springdoc-openapi.version>
         <azure-spring-boot.version>3.14.0</azure-spring-boot.version>
+        <greenmail.version>2.1.3</greenmail.version>
+        <embedded-database.version>2.6.0</embedded-database.version>
+        <embedded-postgres.version>2.1.0</embedded-postgres.version>
     </properties>
     <packaging>pom</packaging>
     <dependencyManagement>
@@ -54,6 +57,24 @@
                 <groupId>com.azure.spring</groupId>
                 <artifactId>azure-spring-boot-starter-keyvault-secrets</artifactId>
                 <version>${azure-spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.zonky.test</groupId>
+                <artifactId>embedded-database-spring-test</artifactId>
+                <version>${embedded-database.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.zonky.test</groupId>
+                <artifactId>embedded-postgres</artifactId>
+                <version>${embedded-postgres.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.icegreen</groupId>
+                <artifactId>greenmail</artifactId>
+                <version>${greenmail.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
