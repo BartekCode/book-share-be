@@ -16,8 +16,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: bookshare2025@gmail.com
-    password: "taer swox qqpp duum"
+    username: 
+    password: "**"
     properties:
       mail:
         smtp:
@@ -32,8 +32,8 @@ spring:
           writetimeout: 5000
   datasource:
     url: jdbc:postgresql://book-share-db.postgres.database.azure.com:5432/booksharedb?sslmode=require
-    username: bookshare123
-    password: "!Ksiazka123"
+    username: 
+    password: 
     hikari:
       minimum-idle: 5
       maximum-pool-size: 10
